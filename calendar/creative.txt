@@ -1,0 +1,14 @@
+Matthew Ranftle- 423485
+Ethan Bresler -429128
+
+login page url
+http://ec2-54-68-224-35.us-west-2.compute.amazonaws.com/~ethanbresler/calendar/login.html
+
+calendar url 
+http://ec2-54-68-224-35.us-west-2.compute.amazonaws.com/~ethanbresler/calendar/main.php
+
+For the creative portion we included a zoom display on the right side of our calendar page. The selected day is displayed in this area and all of the events for that day are listed. We also made the calendar iPhone compatible, and a user can view/add all of their events in their phone calendar by clicking the "cal" button in the upper left of the calendar. 
+
+Default Login: 
+Username: test 
+Password: test

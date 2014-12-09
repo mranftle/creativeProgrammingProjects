@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script src="/socket.io/socket.io.js"></script>
+
+      <style>
+      .page {
+  /*	height: 100%;
+  	position: absolute;
+ 	 width: 100%;*/
+	}
+	.roomDiv{
+	display:none;
+	}
+	.chatArea{
+	display: none;
+	}
+  body{
+    background-color: #dd4444;
+  }
+  #message{
+    background-color: #05908c;
+    height: 10%;
+    width: 100%;
+  }
+	li {
+    list-style-type: none;
+    }
+      </style>
+      <script type ="text/javascript">
+
+      //var socketio = io.connect();
+      var socketio = io('http://ec2-54-68-224-35.us-west-2.compute.amazonaws.com:3456/rooms');
+      position="username";//which page they're on
+      //var socket = io('/room');
+      //$('.chatArea').css( "display", "block");
+      socketio.on("message_to_client",function(data) {
+         //Append an HR thematic break and the escaped HTML of the new message
+
+
+         var node=document.createElement("div");
+         var textnode=document.createTextNode(data['message']);
+         node.appendChild(textnode);
+         node.id="message";
+         document.getElementById("chatlog").appendChild(document.createElement("hr"));
+         document.getElementById("chatlog").appendChild(node);
+
+         //alert(data['message']);
+      });
+      socketio.on("show_rooms",function(data) {
+      data["rooms"].forEach(function(entry) {
+    		document.getElementById("rooms").appendChild(document.createElement("hr"));
+
+			document.getElementById("rooms").innerHTML=document.getElementById("rooms").innerHTML+"<button onclick='setRoom(\""+entry+"\")'>"+entry+"</button>";
+		});
+
+      });
+
+      function sendMessage(){
+         var msg = document.getElementById("message_input").value;
+         //var rm=document.getElementById("room").value;
+         socketio.emit("message_to_server", {message:msg,room:rm,user:usr});
+      }
+      function sendName(){
+      if (position=="username"){
+          usr = document.getElementById("username").value;
+         socketio.emit("username", {user:usr});
+         document.getElementById("form").style.display = "none";
+         position="room";
+         showRooms();
+         }
+
+
+      }
+      function showRooms(){
+      	document.getElementById("roomDiv").style.display = "block";
+      	socketio.emit("get_rooms");
+
+      }
+      function setRoom(room){
+      if (position=="room"){
+      	rm=room;
+      	document.getElementById("roomDiv").style.display = "none";
+      	document.getElementById("roomNumber").innerHTML= "You are chatting in Room: "+rm;
+      	document.getElementById("chatArea").style.display = "block";
+      	position=="chat";
+      }
+      }
+ 		function newRoom(){
+ 		if (position=="room"){
+ 		rm=document.getElementById("new_room").value;
+ 		password=document.getElementById("new_room_password").value;
+ 		socketio.emit("new_room", {room:rm,pass:password});
+ 		setRoom(rm);
+ 		}
+ 	}
+    </script>
+   </head>
+   <body>
+	<p id="p" style="display: none;">test</p>
+    <ul class="pages">
+    <li class="chat page">
+      <div class="chatArea" id="chatArea" >
+      <p id="roomNumber"> </p>
+      	<input type="text" id="message_input"/>
+      	<button onclick="sendMessage()">send</button>
+
+      <div id="chatlog"></div>
+      </div>
+    </li>
+    <li class="login page">
+      <div class="form" id="form">
+        <h3 class="title">What's your nickname?</h3>
+        <input class="usernameInput" id="username" type="text" maxlength="14" />
+        <button onclick="sendName()">send</button>
+      </div>
+    </li>
+     <li class="Room page">
+      <div class="roomDiv" id="roomDiv">
+        <h3 class="title">What room would you like to join?</h3>
+        <div id="rooms"></div>
+        NEW ROOM: <input type="text" id="new_room"/>
+        Password (optional): <input type="password" id="new_room_password"/>
+      	<button onclick="newRoom()">join new room</button>
+      </div>
+    </li>
+  </ul>
+
+
+
+   </body>
+ </html>
